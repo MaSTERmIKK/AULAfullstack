@@ -1,0 +1,85 @@
+
+Thomas Avanzato 
+
+
+launch.json
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ts-node",
+            "type": "node",
+            "request": "launch",
+            "args": [
+                "${relativeFile}"
+            ],
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register"
+            ],
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+            "internalConsoleOptions": "openOnSessionStart",
+            "console": "integratedTerminal"
+        }
+    ]
+}
+
+arrays.ts
+
+import * as readline from 'readline';
+
+const stringArray: string[] = [];
+const numberArray: number[] = [];
+const booleanArray: boolean[] = [];
+
+let end: boolean = false;
+
+let rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+const isNumber: Function = (input: string): boolean => {
+    return !Number.isNaN(parseInt(input));
+}
+
+const isBoolean: Function = (input: string): boolean => {
+    return ["true", "false"].includes(input.toLowerCase());
+}
+
+const booleanValue: Function = (input: string): boolean => {
+    return input === "true";
+}
+
+const askParameter: Function = (): void => {
+    if (!end) {
+        rl.question('Insert a value. Type "e" to terminate.', (answer) => {
+            if (isNumber(answer)) {
+                console.log("Number");
+                numberArray.push(parseInt(answer));
+            } else if (isBoolean(answer)) {
+                console.log("Boolean");
+                booleanArray.push(booleanValue(answer));
+            } else {
+                if (answer.toLowerCase() === "e") {
+                    console.log("Kill");
+                    end = true;
+                } else {
+                    console.log("String");
+                    stringArray.push(answer);
+                }  
+            }
+            askParameter();
+        });
+    } else {
+        rl.close();
+        console.log(stringArray);
+        console.log(numberArray);
+        console.log(booleanArray);
+    }
+}
+
+askParameter();
+
